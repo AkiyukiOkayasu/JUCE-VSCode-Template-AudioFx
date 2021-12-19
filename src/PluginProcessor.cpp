@@ -13,21 +13,20 @@
 //==============================================================================
 AmejuceAudioProcessor::AmejuceAudioProcessor()
 #ifndef JucePlugin_PreferredChannelConfigurations
-    : AudioProcessor (BusesProperties()
+    : AudioProcessor (
+        BusesProperties()
     #if ! JucePlugin_IsMidiEffect
         #if ! JucePlugin_IsSynth
-                          .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+            .withInput ("Input", juce::AudioChannelSet::stereo(), true)
         #endif
-                          .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+            .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
     #endif
     )
 #endif
 {
 }
 
-AmejuceAudioProcessor::~AmejuceAudioProcessor()
-{
-}
+AmejuceAudioProcessor::~AmejuceAudioProcessor() {}
 
 //==============================================================================
 const juce::String AmejuceAudioProcessor::getName() const
@@ -62,39 +61,30 @@ bool AmejuceAudioProcessor::isMidiEffect() const
 #endif
 }
 
-double AmejuceAudioProcessor::getTailLengthSeconds() const
-{
-    return 0.0;
-}
+double AmejuceAudioProcessor::getTailLengthSeconds() const { return 0.0; }
 
 int AmejuceAudioProcessor::getNumPrograms()
 {
-    return 1; // NB: some hosts don't cope very well if you tell them there are 0 programs,
-              // so this should be at least 1, even if you're not really implementing programs.
+    return 1; // NB: some hosts don't cope very well if you tell them there are 0
+              // programs, so this should be at least 1, even if you're not really
+              // implementing programs.
 }
 
-int AmejuceAudioProcessor::getCurrentProgram()
-{
-    return 0;
-}
+int AmejuceAudioProcessor::getCurrentProgram() { return 0; }
 
-void AmejuceAudioProcessor::setCurrentProgram (int index)
-{
-}
+void AmejuceAudioProcessor::setCurrentProgram (int index) {}
 
 const juce::String AmejuceAudioProcessor::getProgramName (int index)
 {
     return {};
 }
 
-void AmejuceAudioProcessor::changeProgramName (int index, const juce::String& newName)
-{
-}
+void AmejuceAudioProcessor::changeProgramName (int index,
+                                               const juce::String& newName) {}
 
 //==============================================================================
-void AmejuceAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
-{
-}
+void AmejuceAudioProcessor::prepareToPlay (double sampleRate,
+                                           int samplesPerBlock) {}
 
 void AmejuceAudioProcessor::releaseResources()
 {
@@ -103,7 +93,8 @@ void AmejuceAudioProcessor::releaseResources()
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
-bool AmejuceAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
+bool AmejuceAudioProcessor::isBusesLayoutSupported (
+    const BusesLayout& layouts) const
 {
     #if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
@@ -113,8 +104,7 @@ bool AmejuceAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
     // In this template code we only support mono or stereo.
     // Some plugin hosts, such as certain GarageBand versions, will only
     // load plugins that support stereo bus layouts.
-    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+    if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
             // This checks if the input layout matches the output layout
@@ -128,38 +118,14 @@ bool AmejuceAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 }
 #endif
 
-void AmejuceAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
+void AmejuceAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
+                                          juce::MidiBuffer& midiMessages)
 {
     juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    const auto totalNumInputChannels = getTotalNumInputChannels();
+    const auto totalNumOutputChannels = getTotalNumOutputChannels();
     const auto numChannels = buffer.getNumChannels();
     const auto bufferSize = buffer.getNumSamples();
-
-    jassert (std::max ({ totalNumInputChannels, totalNumOutputChannels, numChannels }) <= maximumChannels);
-    jassert (bufferSize <= maximumBufferSize);
-
-    for (auto ch = 0; ch < numChannels; ch++)
-    {
-        auto b = buffer.getWritePointer (ch);
-        for (auto samp = 0; samp < bufferSize; samp++)
-        {
-            b[samp] = ame::noise();
-        }
-    }
-
-#if 0
-    //======== JUCEのチャンネル分割バッファーをameで扱えるようにインターリーブに並び替えてコピー ========
-    juce::AudioDataConverters::interleaveSamples (buffer.getArrayOfReadPointers(), interleavedBuffer.getWritePointer(), bufferSize, numChannels);
-
-    //======== ameによるエフェクト処理 ========
-    ame::AudioBlockView block (interleavedBuffer.getWritePointer(), numChannels, bufferSize);
-    //lpf.process (block);
-    //delay.process(block);
-
-    //======== ameのインターリーブバッファーをチャンネル分割に並び替えてJUCEに戻す ========
-    juce::AudioDataConverters::deinterleaveSamples (block.getReadPointer(), buffer.getArrayOfWritePointers(), bufferSize, numChannels);
-#endif
 }
 
 //==============================================================================
@@ -181,10 +147,12 @@ void AmejuceAudioProcessor::getStateInformation (juce::MemoryBlock& destData)
     // as intermediaries to make it easy to save and load complex data.
 }
 
-void AmejuceAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
+void AmejuceAudioProcessor::setStateInformation (const void* data,
+                                                 int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    // You should use this method to restore your parameters from this memory
+    // block, whose contents will have been created by the getStateInformation()
+    // call.
 }
 
 //==============================================================================
